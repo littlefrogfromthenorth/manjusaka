@@ -90,7 +90,7 @@ https://github.com/ydhcui/manjusaka
 
 8、 加入vnc远程控制模式、优化vnc图像更新机制、优化界面 20251210 
 
-
+9、 修改vnc成单例模式，解决多用户连接时的cpu占用问题 20251214
 
 ## 体验地址
    
