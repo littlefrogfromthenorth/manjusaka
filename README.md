@@ -24,6 +24,58 @@ https://github.com/ydhcui/manjusaka
 Manjusaka（牛屎花）是一个基于 Rust 语言开发的现代化远程管理平台，采用微服务架构设计，提供高性能、高安全性的远程管理解决方案。项目名称来源于佛教中的"曼珠沙华"，象征着连接两个世界的桥梁，寓意着本平台作为连接管理端与被管理端的桥梁作用。
 
 
+
+## 🏗️ 架构设计
+
+### 项目结构
+```
+manjusaka/
+├── Cargo.toml              # Workspace 根配置
+├── nps/                    # 管理服务器
+│   ├── src/
+│   │   ├── core/          # 核心逻辑
+│   │   ├── models/        # 数据模型
+│   │   ├── npc/           # 客户端管理
+│   │   ├── npu/           # 插件系统
+│   │   ├── protos/        # 协议生成代码
+│   │   ├── transport/     # 传输层
+│   │   └── utils/         # 工具函数
+│   ├── certs/             # 证书文件
+│   ├── data/              # 数据存储
+│   └── payloads/          # 负载管理
+├── npc1/                   # 基础客户端
+│   ├── src/
+│   │   ├── platform/      # 平台特定代码
+│   │   ├── transport/     # 传输实现
+│   │   └── *.rs          # 核心模块
+├── npc2/                   # 增强客户端
+│   ├── src/
+│   │   ├── terminal/      # 终端功能
+│   │   └── *.rs          # 核心模块
+│   └── examples/          # 示例代码
+└── libs/                   # 共享库
+    ├── transport/         # 通用传输层
+    ├── protos/           # Protocol Buffer 定义
+    └── 多个第三方库适配
+```
+
+### 技术栈
+- **编程语言**: Rust
+- **Web 框架**: Poem + Poem-OpenAPI
+- **数据库**: SQLite (通过 SeaORM)
+- **异步运行时**: Tokio
+- **序列化**: Protocol Buffers
+- **加密**: AWS-LC-RS, X25519-Dalek, AES-GCM
+- **网络**: HTTP/HTTPS, WebSocket, KCP, SSH
+- **系统交互**: sysinfo, netstat2, libloading
+
+### 通信协议
+- **控制通道**: API + WebSocket
+- **数据通道**: 自定义二进制协议
+- **文件传输**: 分块传输，断点续传
+- **屏幕传输**: 智能压缩，增量更新
+
+
 ## 🚀 快速开始
 
 ### 环境要求
@@ -57,6 +109,14 @@ cargo build --workspace --release
 
 4. **访问管理界面**
 打开浏览器访问：`https://localhost:33000/manjusaka/static`
+
+
+
+### API 文档
+```bash
+# 生成 API 文档
+cargo doc --workspace --open
+```
 
 
 ### 使用方法
