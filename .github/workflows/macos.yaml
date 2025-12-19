@@ -58,6 +58,7 @@ jobs:
           echo "Full target: $FULL_TARGET"
           echo "Arch: $ARCH"
 
+          mkdir -p staging
           cp "./target/${{ matrix.target }}/release/nps" "staging/nps"
           tar -cf "release.${{ matrix.target }}.tar" -C staging .
 
