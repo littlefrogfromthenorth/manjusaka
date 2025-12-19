@@ -45,10 +45,7 @@ cd manjusaka
 # 构建整个 workspace
 cargo build --workspace --release
 
-# 或单独构建组件
-cargo build -p nps --release    # 管理服务器
-cargo build -p npc1 --release   # 基础客户端
-cargo build -p npc2 --release   # 增强客户端
+
 ```
 
 3. **启动服务**
