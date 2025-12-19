@@ -1,26 +1,66 @@
 
-# 免责声明 
-本工具仅面向合法授权的企业安全建设行为，如您需要测试本工具的可用性，请自行搭建靶机环境。
 
-在使用本工具进行检测时，您应确保该行为符合当地的法律法规，并且已经取得了足够的授权。请勿对非授权目标进行扫描。
-
-此工具仅限于安全研究和教学，用户承担因使用此工具而导致的所有法律和相关责任！ 作者不承担任何法律和相关责任！
-
-如您在使用本工具的过程中存在任何非法行为，您需自行承担相应后果，我们将不承担任何法律及连带责任。
-
-
-
-# manjusaka
+# Manjusaka - 牛屎花 
 
 https://github.com/ydhcui/manjusaka
 
 
+<div align="center">
+
+![Rust](https://img.shields.io/badge/Rust-1.85%2B-orange?logo=rust)
+![License](https://img.shields.io/badge/License-GPL--3.0-blue)
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
+![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)
+
+**高性能 · 高安全 · 全平台 · 开源免费**
+
+
+</div>
+
 
 ## 牛屎花  
-一款基于rust开发的远程主机管理系统
+Manjusaka（牛屎花）是一个基于 Rust 语言开发的现代化远程管理平台，采用微服务架构设计，提供高性能、高安全性的远程管理解决方案。项目名称来源于佛教中的"曼珠沙华"，象征着连接两个世界的桥梁，寓意着本平台作为连接管理端与被管理端的桥梁作用。
 
 
-## 使用方法
+## 🚀 快速开始
+
+### 环境要求
+- Rust 1.85+ (推荐 nightly 版本)
+- Cargo 包管理器
+- Protocol Buffers 编译器
+- OpenSSL 开发库
+
+### 安装步骤
+
+1. **克隆项目**
+```bash
+git clone https://github.com/ydhcui/manjusaka.git
+cd manjusaka
+```
+
+2. **构建项目**
+```bash
+# 构建整个 workspace
+cargo build --workspace --release
+
+# 或单独构建组件
+cargo build -p nps --release    # 管理服务器
+cargo build -p npc1 --release   # 基础客户端
+cargo build -p npc2 --release   # 增强客户端
+```
+
+3. **启动服务**
+```bash
+# 启动管理服务器
+./target/release/nps
+
+```
+
+4. **访问管理界面**
+打开浏览器访问：`https://localhost:33000/manjusaka/static`
+
+
+### 使用方法
 
 1、添加监听器，上线地址改为外网IP
 
@@ -31,7 +71,6 @@ https://github.com/ydhcui/manjusaka
 4、上线后连接npc1 加载npc2 等待回连。
 
 
-默认登录地址为: https://192.168.93.1:33000/manjusaka/static/
 
 
 ## 功能截图
@@ -94,6 +133,16 @@ https://github.com/ydhcui/manjusaka
 
 ## 体验地址
    
+
+
+# 免责声明 
+本工具仅面向合法授权的企业安全建设行为，如您需要测试本工具的可用性，请自行搭建靶机环境。
+
+在使用本工具进行检测时，您应确保该行为符合当地的法律法规，并且已经取得了足够的授权。请勿对非授权目标进行扫描。
+
+此工具仅限于安全研究和教学，用户承担因使用此工具而导致的所有法律和相关责任！ 作者不承担任何法律和相关责任！
+
+如您在使用本工具的过程中存在任何非法行为，您需自行承担相应后果，我们将不承担任何法律及连带责任。
 
 
 ## 交流
