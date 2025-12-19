@@ -1,0 +1,9 @@
+window.__PRODUCTION__NPS__CONF__={
+	"VITE_GLOB_APP_TITLE":"Manjusaka",
+	"VITE_GLOB_APP_SHORT_NAME":"Manjusaka",
+	"VITE_GLOB_API_URL":"/manjusaka",
+	"VITE_GLOB_UPLOAD_URL":"/images",
+	"VITE_GLOB_API_URL_PREFIX":""
+};
+Object.freeze(window.__PRODUCTION__NPS__CONF__);
+Object.defineProperty(window,"__PRODUCTION__NPS__CONF__",{configurable:false,writable:false,});

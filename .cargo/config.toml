@@ -1,0 +1,21 @@
+
+[target.i686-pc-windows-msvc]
+rustflags = [
+  "-C", "link-arg=/DEBUG:NONE",
+  #"-C", "target-feature=+crt-static",
+  #"-C", "link-args=/subsystem:console,5.01",
+  "-L", "D:\\CodeProject\\hw_src\\obj\\VC-LTL-Binary\\TargetPlatform\\5.1.2600.0\\lib\\Win32",
+  "-C", "link-args=D:\\CodeProject\\hw_src\\obj\\YY-Thunks-Objs\\objs\\x86\\YY_Thunks_for_WinXp.obj",
+  "-C", "link-args=oldnames.lib",
+]
+
+[target.x86_64-pc-windows-msvc]
+rustflags = [
+  "-C", "link-arg=/DEBUG:NONE",
+  #"-C", "target-feature=+crt-static",
+  #"-C", "link-args=/subsystem:console,5.01",
+  "-L", "D:\\CodeProject\\hw_src\\obj\\VC-LTL-Binary\\TargetPlatform\\5.2.3790.0\\lib\\x64",
+  "-C", "link-args=D:\\CodeProject\\hw_src\\obj\\YY-Thunks-Objs\\objs\\x64\\YY_Thunks_for_Win7.obj",
+  "-C", "link-args=oldnames.lib",
+]
+

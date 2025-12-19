@@ -1,0 +1,14 @@
+[package]
+name = "noise"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+x25519-dalek = "1.1.1"
+snowstorm = "0.3"
+anyhow = "1"
+tokio = "1"
+sha1 = "0.11.0-rc.3"
+rand = {version = "0.7", features=["std"] }
+rand_core = { version = "0.6.4", features = ["getrandom", "std"] }
+log = "0.4"

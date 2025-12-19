@@ -1,0 +1,194 @@
+# Rust
+/target/
+/payloads/
+/data/
+**/*.rs.bk
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Certificates
+*.pem
+*.key
+*.crt
+*.csr
+
+# Build artifacts
+/build/
+/dist/
+/out/
+
+# Runtime data
+/data/
+/tmp/
+/temp/
+
+# Configuration files (except examples)
+*.local.yaml
+*.local.yml
+*.local.json
+*.local.toml
+
+# Protobuf generated files
+**/*.pb.rs
+**/*.pb.h
+**/*.pb.cc
+
+# Binary files
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Coverage
+/coverage/
+*.profraw
+
+# Documentation
+/doc/
+/book/
+
+# Test artifacts
+/test-results/
+/__pycache__/
+
+# Backup files
+*.bak
+*.backup
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Secret files
+secrets.yaml
+secrets.yml
+secrets.json
+
+# Temporary files
+*.tmp
+*.temp
+
+# Visual Studio Code
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+
+# IntelliJ
+*.iml
+.idea/modules.xml
+.idea/workspace.xml
+
+# Windows
+desktop.ini
+
+# macOS
+._*
+
+# Linux
+*~
+
+# Output directories
+/output/
+/release/
+
+# Package files
+*.pkg
+*.deb
+*.rpm
+*.tar.gz
+*.zip
+
+# Profiling data
+*.profdata
+*.gcda
+*.gcno
+
+# Documentation builds
+/site/
+/docs/_build/
+
+# Python (if any)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Node.js (if any)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Docker
+.dockerignore
+Dockerfile
+docker-compose.yml
+docker-compose.override.yml
+
+# Kubernetes
+kubeconfig
+*.kubeconfig
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+
+# Ansible
+*.retry
+
+# Vagrant
+.vagrant/
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Editor backup files
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# System files
+.directory
+*DS_Store*
+.AppleDouble
+.LSOverride
+Icon
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Project specific ignores
+**/.git

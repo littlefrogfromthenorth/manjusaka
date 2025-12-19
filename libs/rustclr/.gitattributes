@@ -1,0 +1,2 @@
+*.cs linguist-vendored
+scripts/*.py linguist-vendored

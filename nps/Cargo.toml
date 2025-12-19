@@ -1,0 +1,38 @@
+[package]
+name = "nps"
+version = "1.0.1"
+edition = "2021"
+
+
+
+[dependencies]
+noise = { version = "*", path = "../libs/noise"}
+utils = { version = "*", path = "../libs/utils"}
+crypto = { version = "*", path = "../libs/crypto"}
+
+poem = { version = "3", features = ["session", "cookie", "multipart","websocket","embed","rustls","anyhow"] }
+poem-openapi = { version = "5", features = ["rapidoc"] }
+sea-orm = { version = "1", features = ["sqlx-sqlite", "runtime-tokio", "macros"] }
+
+byteorder = "1.5"
+serde_json = "1.0"
+captcha-rs = "0.2.11"
+rust-embed = "8.0"
+chrono = "0.4"
+
+image.workspace = true
+tokio.workspace = true
+anyhow.workspace = true
+prost.workspace = true
+serde.workspace = true
+async-trait.workspace = true
+futures.workspace = true
+russh.workspace = true
+russh-sftp.workspace = true
+tokio-yamux.workspace = true
+tracing-subscriber.workspace = true
+log.workspace = true
+
+[build-dependencies]
+prost-build.workspace = true
+static_vcruntime.workspace = true
