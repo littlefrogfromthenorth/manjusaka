@@ -2,8 +2,6 @@
 
 # Manjusaka - 牛屎花 
 
-https://github.com/ydhcui/manjusaka
-
 
 <div align="center">
 
@@ -19,6 +17,10 @@ https://github.com/ydhcui/manjusaka
 
 
 ## 牛屎花  
+
+https://github.com/ydhcui/manjusaka
+
+
 Manjusaka（牛屎花）是一个基于 Rust 语言开发的现代化远程管理平台，采用微服务架构设计，提供高性能、高安全性的远程管理解决方案。项目名称来源于佛教中的"曼珠沙华"，象征着连接两个世界的桥梁，寓意着本平台作为连接管理端与被管理端的桥梁作用。
 
 
