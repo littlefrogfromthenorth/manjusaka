@@ -61,7 +61,6 @@ jobs:
 
       - name: Copy Release
         run: |
-          ls -lah /project
           ls -lah ./target/${{ matrix.target }}/release
           FULL_TARGET="${{ matrix.target }}"
           ARCH="${FULL_TARGET%%-*}"
