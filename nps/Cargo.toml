@@ -4,11 +4,11 @@ version = "1.0.1"
 edition = "2021"
 
 
-
 [dependencies]
 noise = { version = "*", path = "../libs/noise"}
 utils = { version = "*", path = "../libs/utils"}
 crypto = { version = "*", path = "../libs/crypto"}
+transport = { version = "*", path = "../libs/transport" , features = ["tcp","kcp","ws"]}
 
 poem = { version = "3", features = ["session", "cookie", "multipart","websocket","embed","rustls","anyhow"] }
 poem-openapi = { version = "5", features = ["rapidoc"] }

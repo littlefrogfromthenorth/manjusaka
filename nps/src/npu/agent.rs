@@ -130,6 +130,20 @@ impl AgentApi {
         Json(response)
     }
 
+    #[oai(path = "/addevent", method = "post")]
+    pub async fn addevent(
+        &self,
+        app: Data<&core::AppState>,
+        Json(req): Json<types::AgentData>,
+    ) -> Result<JsonResponse<String>> {
+        let mut response = ApiResponse::default();
+        let data = unwrap_err!(utils::b64decode(&req.data));
+        let mut cursor = std::io::Cursor::new(data);
+        let mut event = unwrap_err!(protos::nps::AgentEvent::decode(&mut cursor));
+        app.add_event(event).await;
+        Ok(Json(response))
+    }
+
     #[oai(path = "/agentinfo", method = "post")] 
     pub async fn agentinfo(
         &self,
@@ -161,17 +175,33 @@ impl AgentApi {
         Ok(Json(response))
     }
 
-    #[oai(path = "/addevent", method = "post")]
-    pub async fn addevent(
+    #[oai(path = "/pluglist", method = "post")]
+    pub async fn pluglist(
         &self,
         app: Data<&core::AppState>,
-        Json(req): Json<types::AgentData>,
-    ) -> Result<JsonResponse<String>> {
+    ) -> Result<JsonResponse<serde_json::Value>> {
         let mut response = ApiResponse::default();
-        let data = unwrap_err!(utils::b64decode(&req.data));
-        let mut cursor = std::io::Cursor::new(data);
-        let mut event = unwrap_err!(protos::nps::AgentEvent::decode(&mut cursor));
-        app.add_event(event).await;
+        let mut items = Vec::new();
+
+        if let Ok(mut entries) = tokio::fs::read_dir("./plugins").await {
+            while let Some(entry) = entries.next_entry().await.unwrap_or(None) {
+                if let Ok(file_type) = entry.file_type().await {
+                    if file_type.is_file() {
+                        if let Some(name) = entry.file_name().to_str() {
+                            items.push(serde_json::json!({
+                                "name":     name.to_string(),
+                                "entry":    "".to_string(),
+                                "args":     "".to_string(),
+                            }));
+                        }
+                    }
+                }
+            }
+        }
+
+        response.with_data(serde_json::json!({
+            "items": items
+        }));
         Ok(Json(response))
     }
 

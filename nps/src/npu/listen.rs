@@ -101,9 +101,11 @@ impl ListenApi {
         Json(req): Json<types::ListenAction>
     ) -> Result<JsonResponse<String>> {
         let mut response = ApiResponse::default();
+        let id = req.id.unwrap_or_default();
 
-        let _ = unwrap_err!(models::prelude::Listens::delete_by_id(req.id.unwrap_or_default()).exec(&app.conn).await);
-
+        app.stop_listen(&id).await?;
+        let _ = unwrap_err!(models::prelude::Listens::delete_by_id(id).exec(&app.conn).await);
+        
         response.with_msg("ok");
         Ok(Json(response))
     }

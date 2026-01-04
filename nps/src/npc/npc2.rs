@@ -2,6 +2,9 @@ use crate::core;
 use crate::protos;
 use crate::models;
 use noise::NoiseConfig;
+use transport::Transport2;
+use transport::{TcpTransport,KcpTransport,WebsocketTransport};
+
 
 use std::convert::TryFrom;
 use std::time::Duration;
@@ -64,36 +67,61 @@ pub async fn start(app: core::AppState) -> anyhow::Result<()> {
 
 pub async fn start_listen(app: core::AppState, listen: models::listens::Model) -> anyhow::Result<()> {
 	let noise = NoiseConfig::new(listen.enckey.as_bytes(),&listen.noise)?;
-	
-	//tcp
-	let socket = TcpListener::bind(&listen.listenaddr).await?;
-
-
-	log::info!("start listen bind on {}",listen.listenaddr);
-
 	let (tx, mut rx) = oneshot::channel();
 	app.add_listen(&listen.id, tx).await;
-	tokio::spawn(async move{
-		if let Err(e) = npc2_handler(socket, app, noise, rx).await{
-			log::error!("npc2_handler {}",e);
-		}
-	});
+
+	let addr: SocketAddr = listen.listenaddr.parse()
+	.map_err(|e| anyhow::anyhow!("invalid listen address '{}': {}", listen.listenaddr, e))?;
+
+	log::info!("start listen bind on {}",listen.listenaddr);
+	match listen.transport.as_str(){
+		"tcp" => {
+			let transport = TcpTransport::new();
+			let listener = transport.listen(&addr).await?;
+			tokio::spawn(async move{
+				if let Err(e) = npc2_handler(transport, listener, app, noise, rx).await{
+					log::error!("npc2_handler {}",e);
+				}
+			});
+		},
+		"kcp" => {
+			let transport = KcpTransport::new();
+			let listener = transport.listen(&addr).await?;
+			tokio::spawn(async move{
+				if let Err(e) = npc2_handler(transport, listener, app, noise, rx).await{
+					log::error!("npc2_handler {}",e);
+				}
+			});
+		},
+		"ws" => {
+			let transport = WebsocketTransport::new();
+			let listener = transport.listen(&addr).await?;
+			tokio::spawn(async move{
+				if let Err(e) = npc2_handler(transport, listener, app, noise, rx).await{
+					log::error!("npc2_handler {}",e);
+				}
+			});
+		},
+		 _ => return Err(anyhow::anyhow!("unknown transport: {}", listen.transport)),
+	};
 
 	Ok(())
 }
 
-async fn npc2_handler(
-	socket:TcpListener, 
+async fn npc2_handler<T: Transport2>(
+	mut transport: T, 
+	mut listener: T::Acceptor,
 	app: core::AppState, 
 	noise: NoiseConfig, 
 	mut rx: oneshot::Receiver<()>
 ) -> anyhow::Result<()> {
+
 	loop{
 		tokio::select!{
 			_ = &mut rx => {
 	            break
 	        },
-			Ok((mut stream, addr)) = socket.accept() => {
+			Ok((mut stream, addr)) = transport.accept(&mut listener) => {
 		    	let app1 = app.clone(); 
 		    	let noise1 = noise.clone(); 
 

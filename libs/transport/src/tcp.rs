@@ -1,14 +1,13 @@
-use super::Transport;
-
-use crate::config::UserAddr;
+use super::Transport2;
+use super::NoCertificateVerification;
+use super::UserAddr;
 
 use anyhow::Result;
 use async_trait::async_trait;
 use tokio::net::{TcpListener, TcpStream};
 use tokio::io::{AsyncRead, AsyncWrite, ReadBuf};
 use tokio_rustls::{TlsConnector, TlsStream};
-use tokio_rustls::rustls::{pki_types, ClientConfig, RootCertStore,DigitallySignedStruct, Error, SignatureScheme};
-use tokio_rustls::rustls::client::danger::{HandshakeSignatureValid, ServerCertVerified, ServerCertVerifier};
+use tokio_rustls::rustls::{pki_types, ClientConfig, RootCertStore};
 
 use std::net::SocketAddr;
 use std::sync::Arc;
@@ -37,7 +36,7 @@ pub struct TcpTransport {
 }
 
 #[async_trait]
-impl Transport for TcpTransport {
+impl Transport2 for TcpTransport {
     type Acceptor = TcpListener;
     type Stream = TcpOrTlsStream;
 
@@ -48,10 +47,7 @@ impl Transport for TcpTransport {
         }
     }
 
-    async fn listen(
-        &self, 
-        addr: &SocketAddr
-    ) -> Result<Self::Acceptor> {
+    async fn listen(&self, addr: &SocketAddr) -> Result<Self::Acceptor> {
         Ok(TcpListener::bind(addr).await?)
     }
 
@@ -150,58 +146,3 @@ impl AsyncWrite for TcpOrTlsStream {
         }
     }
 }
-
-
-#[derive(Debug)]
-pub struct NoCertificateVerification {}
-
-impl ServerCertVerifier for NoCertificateVerification {
-    fn verify_server_cert(
-        &self,
-        _: &pki_types::CertificateDer<'_>,
-        _: &[pki_types::CertificateDer<'_>],
-        _: &pki_types::ServerName<'_>,
-        _: &[u8],
-        _: pki_types::UnixTime) 
-    -> Result<ServerCertVerified, Error> {
-        Ok(ServerCertVerified::assertion())
-    }
-
-    fn verify_tls12_signature(
-        &self,
-        _: &[u8],
-        _: &pki_types::CertificateDer<'_>,
-        _: &DigitallySignedStruct) 
-    -> Result<HandshakeSignatureValid, Error> {
-        Ok(HandshakeSignatureValid::assertion())
-    }
-
-    fn verify_tls13_signature(
-        &self,
-        _: &[u8],
-        _: &pki_types::CertificateDer<'_>,
-        _: &DigitallySignedStruct)
-    -> Result<HandshakeSignatureValid, Error> {
-        Ok(HandshakeSignatureValid::assertion())
-    }
-
-    fn supported_verify_schemes(&self) 
-    -> Vec<SignatureScheme> {
-        vec![
-            SignatureScheme::RSA_PKCS1_SHA1,
-            SignatureScheme::ECDSA_SHA1_Legacy,
-            SignatureScheme::RSA_PKCS1_SHA256,
-            SignatureScheme::ECDSA_NISTP256_SHA256,
-            SignatureScheme::RSA_PKCS1_SHA384,
-            SignatureScheme::ECDSA_NISTP384_SHA384,
-            SignatureScheme::RSA_PKCS1_SHA512,
-            SignatureScheme::ECDSA_NISTP521_SHA512,
-            SignatureScheme::RSA_PSS_SHA256,
-            SignatureScheme::RSA_PSS_SHA384,
-            SignatureScheme::RSA_PSS_SHA512,
-            SignatureScheme::ED25519,
-            SignatureScheme::ED448,
-        ]
-    }
-}
-

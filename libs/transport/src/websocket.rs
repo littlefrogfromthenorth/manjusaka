@@ -1,7 +1,7 @@
 
-use super::Transport;
+use super::Transport2;
 use super::NoCertificateVerification;
-use crate::config::UserAddr;
+use super::UserAddr;
 
 use async_trait::async_trait;
 use bytes::Bytes;
@@ -9,11 +9,11 @@ use futures::{Sink, Stream};
 
 use tokio_util::io::StreamReader;
 use tokio::io::{AsyncBufRead, AsyncRead, AsyncWrite, ReadBuf};
-use tokio::net::{TcpListener, TcpSocket, TcpStream, ToSocketAddrs};
+use tokio::net::{TcpListener, TcpStream};
 use tokio_rustls::rustls::pki_types::ServerName;
 use tokio_rustls::rustls::{ClientConfig, RootCertStore};
-use tokio_rustls::{TlsConnector, TlsStream};
-use tokio_tungstenite::tungstenite::protocol::{Message,Role};
+use tokio_rustls::{TlsConnector};
+use tokio_tungstenite::tungstenite::protocol::{Message};
 use tokio_tungstenite::{
     accept_async_with_config, 
     client_async_with_config, 
@@ -24,11 +24,10 @@ use tokio_tungstenite::tungstenite::handshake::client::{generate_key, Request as
 
 pub use tokio_tungstenite::tungstenite::protocol::WebSocketConfig;
 
-use url::Url;
 use core::result::Result;
 use std::convert::TryFrom;
 use std::io::{Error, ErrorKind};
-use std::net::{IpAddr, SocketAddr};
+use std::net::SocketAddr;
 use std::pin::Pin;
 use std::sync::Arc;
 use std::task::{ready, Context, Poll};
@@ -128,21 +127,17 @@ pub struct WebsocketTransport {
 }
 
 #[async_trait]
-impl Transport for WebsocketTransport {
+impl Transport2 for WebsocketTransport {
     type Acceptor = TcpListener;
     type Stream = WebsocketTunnel;
 
     fn new() -> Self {
-        
         Self{
             config: WebSocketConfig::default()
         }
     }
 
-    async fn listen(
-        &self, 
-        addr: &SocketAddr
-    ) -> anyhow::Result<Self::Acceptor> {
+    async fn listen(&self, addr: &SocketAddr) -> anyhow::Result<Self::Acceptor> {
         Ok(TcpListener::bind(addr).await?)
     }
 

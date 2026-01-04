@@ -1,5 +1,5 @@
-use super::Transport;
-use crate::config::UserAddr;
+use super::Transport2;
+use crate::UserAddr;
 
 use anyhow::Result;
 use async_trait::async_trait;
@@ -14,7 +14,7 @@ pub struct KcpTransport {
 }
 
 #[async_trait]
-impl Transport for KcpTransport {
+impl Transport2 for KcpTransport {
     type Acceptor = KcpListener;
     type Stream = KcpStream;
 
@@ -28,8 +28,7 @@ impl Transport for KcpTransport {
         }
     }
 
-    async fn listen(&self, addr: &SocketAddr) 
-    -> Result<Self::Acceptor> {
+    async fn listen(&self, addr: &SocketAddr) -> Result<Self::Acceptor> {
         Ok(KcpListener::bind(self.config, addr).await?)
     }
 

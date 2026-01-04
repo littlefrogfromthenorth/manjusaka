@@ -39,4 +39,5 @@ async fn main() {
 fn dir_init() {
     let _ = std::fs::create_dir_all("./data");
     let _ = std::fs::create_dir_all("./payloads");
+    let _ = std::fs::create_dir_all("./plugins");
 }
