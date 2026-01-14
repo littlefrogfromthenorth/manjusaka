@@ -62,7 +62,9 @@
         >新建隧道</a-button>
         <a-button type="ghost" />
         <template v-if="state.agent.ntype === 'npc1'">
-        <a-button click="GetPass" type="primary" disabled> 获取密码 </a-button>
+
+        <a-button @click="RunPlugin" type="primary"> 运行插件 </a-button>
+
         </template>
         <Description @register="agentinfo" :data="state.agent" />
       </CollapseContainer>
@@ -91,6 +93,7 @@
     </div>
   </PageWrapper>
   <ProxyModal @register="registerModal" />
+  <PlugModal @register="registerModal" @success="PlugSend"/>
 </template>
 
 <script lang="ts">
@@ -129,8 +132,10 @@ import { FitAddon } from "@xterm/addon-fit";
 import { downloadByData } from "/@/utils/file/download";
 import { copyTextToClipboard } from "/@/hooks/web/useCopyToClipboard";
 import { nps } from "./../nps.js";
-import ProxyModal from "./../../proxys/RoleModal.vue";
 import { PostApi } from "/@/api";
+import ProxyModal from "./../../proxys/RoleModal.vue";
+import PlugModal from "./../PlugModal.vue";
+
 
 export default defineComponent({
   name: "AgentInfo",
@@ -146,6 +151,7 @@ export default defineComponent({
     Terminal,
     FitAddon,
     ProxyModal,
+    PlugModal
   },
   props: ["agent", "event"],
   emits: ["onsend"],
@@ -159,7 +165,7 @@ export default defineComponent({
       crtlist: [],
     });
     const go = useGo();
-    const [registerModal, { openModal }] = useModal();
+    const [registerModal, { openModal,closeModal }] = useModal();
     const { createMessage } = useMessage();
     const [agentinfo] = useDescription({
       column: 2,
@@ -345,6 +351,19 @@ export default defineComponent({
       });
     }
 
+    function RunPlugin() {
+      openModal(true, {
+        record: {
+          id: state.agent.id, // 将ID传递给表单
+        },
+      });
+    }
+
+    function PlugSend(event) {
+      emit("onsend", event);
+      closeModal();
+    }
+
     const beforeUpload = (file: File) => {
       const reader = new FileReader();
       reader.readAsArrayBuffer(file);
@@ -491,7 +510,11 @@ export default defineComponent({
             }, 5000); // 3秒
           }
           if (props.event.plugin.act === "dd") {
-            term.write(props.event.plugin.data);
+            term.writeln(props.event.plugin.name,props.event.plugin.args);
+            term.writeln(props.event.plugin.data);
+            term.write(
+              `[${state.agent.username}@${state.agent.hostname} ${state.pwd}]#`
+            );
           }
         }
         if (props.event.action) {
@@ -586,6 +609,8 @@ export default defineComponent({
       Npc2Load,
       registerModal,
       CreateProxy,
+      RunPlugin,
+      PlugSend,
       OpenCmd,
       OpenFile,
       OpenVnc,

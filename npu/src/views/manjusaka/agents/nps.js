@@ -491,7 +491,7 @@ export const nps = $root.nps = (() => {
          * @property {string|null} [id] Config id
          * @property {number|null} [action] Config action
          * @property {string|null} [callback1] Config callback1
-         * @property {string|null} [callback2] Config callback2
+         * @property {string|null} [config] Config config
          * @property {string|null} [enckey] Config enckey
          * @property {number|null} [sleep] Config sleep
          * @property {string|null} [headers] Config headers
@@ -538,12 +538,12 @@ export const nps = $root.nps = (() => {
         Config.prototype.callback1 = "";
 
         /**
-         * Config callback2.
-         * @member {string} callback2
+         * Config config.
+         * @member {string} config
          * @memberof nps.Config
          * @instance
          */
-        Config.prototype.callback2 = "";
+        Config.prototype.config = "";
 
         /**
          * Config enckey.
@@ -607,8 +607,8 @@ export const nps = $root.nps = (() => {
                 writer.uint32(/* id 2, wireType 0 =*/16).int32(message.action);
             if (message.callback1 != null && Object.hasOwnProperty.call(message, "callback1"))
                 writer.uint32(/* id 3, wireType 2 =*/26).string(message.callback1);
-            if (message.callback2 != null && Object.hasOwnProperty.call(message, "callback2"))
-                writer.uint32(/* id 4, wireType 2 =*/34).string(message.callback2);
+            if (message.config != null && Object.hasOwnProperty.call(message, "config"))
+                writer.uint32(/* id 4, wireType 2 =*/34).string(message.config);
             if (message.enckey != null && Object.hasOwnProperty.call(message, "enckey"))
                 writer.uint32(/* id 5, wireType 2 =*/42).string(message.enckey);
             if (message.sleep != null && Object.hasOwnProperty.call(message, "sleep"))
@@ -661,7 +661,7 @@ export const nps = $root.nps = (() => {
                     message.callback1 = reader.string();
                     break;
                 case 4:
-                    message.callback2 = reader.string();
+                    message.config = reader.string();
                     break;
                 case 5:
                     message.enckey = reader.string();
@@ -719,9 +719,9 @@ export const nps = $root.nps = (() => {
             if (message.callback1 != null && message.hasOwnProperty("callback1"))
                 if (!$util.isString(message.callback1))
                     return "callback1: string expected";
-            if (message.callback2 != null && message.hasOwnProperty("callback2"))
-                if (!$util.isString(message.callback2))
-                    return "callback2: string expected";
+            if (message.config != null && message.hasOwnProperty("config"))
+                if (!$util.isString(message.config))
+                    return "config: string expected";
             if (message.enckey != null && message.hasOwnProperty("enckey"))
                 if (!$util.isString(message.enckey))
                     return "enckey: string expected";
@@ -755,8 +755,8 @@ export const nps = $root.nps = (() => {
                 message.action = object.action | 0;
             if (object.callback1 != null)
                 message.callback1 = String(object.callback1);
-            if (object.callback2 != null)
-                message.callback2 = String(object.callback2);
+            if (object.config != null)
+                message.config = String(object.config);
             if (object.enckey != null)
                 message.enckey = String(object.enckey);
             if (object.sleep != null)
@@ -785,7 +785,7 @@ export const nps = $root.nps = (() => {
                 object.id = "";
                 object.action = 0;
                 object.callback1 = "";
-                object.callback2 = "";
+                object.config = "";
                 object.enckey = "";
                 object.sleep = 0;
                 object.headers = "";
@@ -797,8 +797,8 @@ export const nps = $root.nps = (() => {
                 object.action = message.action;
             if (message.callback1 != null && message.hasOwnProperty("callback1"))
                 object.callback1 = message.callback1;
-            if (message.callback2 != null && message.hasOwnProperty("callback2"))
-                object.callback2 = message.callback2;
+            if (message.config != null && message.hasOwnProperty("config"))
+                object.config = message.config;
             if (message.enckey != null && message.hasOwnProperty("enckey"))
                 object.enckey = message.enckey;
             if (message.sleep != null && message.hasOwnProperty("sleep"))
@@ -1471,11 +1471,12 @@ export const nps = $root.nps = (() => {
          * Properties of a Plugin.
          * @memberof nps
          * @interface IPlugin
-         * @property {string|null} [act] Plugin act
-         * @property {string|null} [name] Plugin name
-         * @property {string|null} [arch] Plugin arch
-         * @property {string|null} [args] Plugin args
          * @property {Uint8Array|null} [data] Plugin data
+         * @property {string|null} [act] Plugin act
+         * @property {string|null} [arch] Plugin arch
+         * @property {string|null} [name] Plugin name
+         * @property {string|null} [args] Plugin args
+         * @property {string|null} [entry] Plugin entry
          */
 
         /**
@@ -1494,20 +1495,20 @@ export const nps = $root.nps = (() => {
         }
 
         /**
+         * Plugin data.
+         * @member {Uint8Array} data
+         * @memberof nps.Plugin
+         * @instance
+         */
+        Plugin.prototype.data = $util.newBuffer([]);
+
+        /**
          * Plugin act.
          * @member {string} act
          * @memberof nps.Plugin
          * @instance
          */
         Plugin.prototype.act = "";
-
-        /**
-         * Plugin name.
-         * @member {string} name
-         * @memberof nps.Plugin
-         * @instance
-         */
-        Plugin.prototype.name = "";
 
         /**
          * Plugin arch.
@@ -1518,6 +1519,14 @@ export const nps = $root.nps = (() => {
         Plugin.prototype.arch = "";
 
         /**
+         * Plugin name.
+         * @member {string} name
+         * @memberof nps.Plugin
+         * @instance
+         */
+        Plugin.prototype.name = "";
+
+        /**
          * Plugin args.
          * @member {string} args
          * @memberof nps.Plugin
@@ -1526,12 +1535,12 @@ export const nps = $root.nps = (() => {
         Plugin.prototype.args = "";
 
         /**
-         * Plugin data.
-         * @member {Uint8Array} data
+         * Plugin entry.
+         * @member {string} entry
          * @memberof nps.Plugin
          * @instance
          */
-        Plugin.prototype.data = $util.newBuffer([]);
+        Plugin.prototype.entry = "";
 
         /**
          * Creates a new Plugin instance using the specified properties.
@@ -1557,16 +1566,18 @@ export const nps = $root.nps = (() => {
         Plugin.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.data != null && Object.hasOwnProperty.call(message, "data"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.data);
             if (message.act != null && Object.hasOwnProperty.call(message, "act"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.act);
-            if (message.name != null && Object.hasOwnProperty.call(message, "name"))
-                writer.uint32(/* id 2, wireType 2 =*/18).string(message.name);
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.act);
             if (message.arch != null && Object.hasOwnProperty.call(message, "arch"))
                 writer.uint32(/* id 3, wireType 2 =*/26).string(message.arch);
+            if (message.name != null && Object.hasOwnProperty.call(message, "name"))
+                writer.uint32(/* id 4, wireType 2 =*/34).string(message.name);
             if (message.args != null && Object.hasOwnProperty.call(message, "args"))
-                writer.uint32(/* id 4, wireType 2 =*/34).string(message.args);
-            if (message.data != null && Object.hasOwnProperty.call(message, "data"))
-                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.data);
+                writer.uint32(/* id 5, wireType 2 =*/42).string(message.args);
+            if (message.entry != null && Object.hasOwnProperty.call(message, "entry"))
+                writer.uint32(/* id 6, wireType 2 =*/50).string(message.entry);
             return writer;
         };
 
@@ -1602,19 +1613,22 @@ export const nps = $root.nps = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.act = reader.string();
+                    message.data = reader.bytes();
                     break;
                 case 2:
-                    message.name = reader.string();
+                    message.act = reader.string();
                     break;
                 case 3:
                     message.arch = reader.string();
                     break;
                 case 4:
-                    message.args = reader.string();
+                    message.name = reader.string();
                     break;
                 case 5:
-                    message.data = reader.bytes();
+                    message.args = reader.string();
+                    break;
+                case 6:
+                    message.entry = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -1651,21 +1665,24 @@ export const nps = $root.nps = (() => {
         Plugin.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.act != null && message.hasOwnProperty("act"))
-                if (!$util.isString(message.act))
-                    return "act: string expected";
-            if (message.name != null && message.hasOwnProperty("name"))
-                if (!$util.isString(message.name))
-                    return "name: string expected";
-            if (message.arch != null && message.hasOwnProperty("arch"))
-                if (!$util.isString(message.arch))
-                    return "arch: string expected";
-            if (message.args != null && message.hasOwnProperty("args"))
-                if (!$util.isString(message.args))
-                    return "args: string expected";
             if (message.data != null && message.hasOwnProperty("data"))
                 if (!(message.data && typeof message.data.length === "number" || $util.isString(message.data)))
                     return "data: buffer expected";
+            if (message.act != null && message.hasOwnProperty("act"))
+                if (!$util.isString(message.act))
+                    return "act: string expected";
+            if (message.arch != null && message.hasOwnProperty("arch"))
+                if (!$util.isString(message.arch))
+                    return "arch: string expected";
+            if (message.name != null && message.hasOwnProperty("name"))
+                if (!$util.isString(message.name))
+                    return "name: string expected";
+            if (message.args != null && message.hasOwnProperty("args"))
+                if (!$util.isString(message.args))
+                    return "args: string expected";
+            if (message.entry != null && message.hasOwnProperty("entry"))
+                if (!$util.isString(message.entry))
+                    return "entry: string expected";
             return null;
         };
 
@@ -1681,19 +1698,21 @@ export const nps = $root.nps = (() => {
             if (object instanceof $root.nps.Plugin)
                 return object;
             let message = new $root.nps.Plugin();
-            if (object.act != null)
-                message.act = String(object.act);
-            if (object.name != null)
-                message.name = String(object.name);
-            if (object.arch != null)
-                message.arch = String(object.arch);
-            if (object.args != null)
-                message.args = String(object.args);
             if (object.data != null)
                 if (typeof object.data === "string")
                     $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0);
                 else if (object.data.length)
                     message.data = object.data;
+            if (object.act != null)
+                message.act = String(object.act);
+            if (object.arch != null)
+                message.arch = String(object.arch);
+            if (object.name != null)
+                message.name = String(object.name);
+            if (object.args != null)
+                message.args = String(object.args);
+            if (object.entry != null)
+                message.entry = String(object.entry);
             return message;
         };
 
@@ -1711,10 +1730,6 @@ export const nps = $root.nps = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.act = "";
-                object.name = "";
-                object.arch = "";
-                object.args = "";
                 if (options.bytes === String)
                     object.data = "";
                 else {
@@ -1722,17 +1737,24 @@ export const nps = $root.nps = (() => {
                     if (options.bytes !== Array)
                         object.data = $util.newBuffer(object.data);
                 }
+                object.act = "";
+                object.arch = "";
+                object.name = "";
+                object.args = "";
+                object.entry = "";
             }
-            if (message.act != null && message.hasOwnProperty("act"))
-                object.act = message.act;
-            if (message.name != null && message.hasOwnProperty("name"))
-                object.name = message.name;
-            if (message.arch != null && message.hasOwnProperty("arch"))
-                object.arch = message.arch;
-            if (message.args != null && message.hasOwnProperty("args"))
-                object.args = message.args;
             if (message.data != null && message.hasOwnProperty("data"))
                 object.data = options.bytes === String ? $util.base64.encode(message.data, 0, message.data.length) : options.bytes === Array ? Array.prototype.slice.call(message.data) : message.data;
+            if (message.act != null && message.hasOwnProperty("act"))
+                object.act = message.act;
+            if (message.arch != null && message.hasOwnProperty("arch"))
+                object.arch = message.arch;
+            if (message.name != null && message.hasOwnProperty("name"))
+                object.name = message.name;
+            if (message.args != null && message.hasOwnProperty("args"))
+                object.args = message.args;
+            if (message.entry != null && message.hasOwnProperty("entry"))
+                object.entry = message.entry;
             return object;
         };
 

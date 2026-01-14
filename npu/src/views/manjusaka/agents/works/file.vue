@@ -50,7 +50,7 @@
     >
       <a-input 
         v-model:value="renameValue" 
-        placeholder="请输入新的文件名" 
+        placeholder="新文件名" 
         @keydown.enter="handleRenameConfirm"
         ref="renameInputRef"
       />
@@ -352,7 +352,7 @@ export default defineComponent({
 
     function confirmDelete(record: any) {
       deleteRecord.value = record;
-      deleteFileName.value = record.file_name;
+      deleteFileName.value = `${state.current_dir}/${record.file_name}`;
       openDeleteModal(true);
     }
 

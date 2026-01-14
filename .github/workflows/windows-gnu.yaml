@@ -69,8 +69,13 @@ jobs:
           echo "Arch: $ARCH"
 
           mkdir -p staging
+
+          cp -r certs staging/certs
+          cp -r payloads staging/payloads
+          cp -r plugins staging/plugins
+          
           cp "./target/${{ matrix.target }}/release/nps.exe" "staging/nps.exe"
-          tar -cf "release.${{ matrix.target }}.tar" -C staging .
+          tar -czf "release.${{ matrix.target }}.tar.gz" -C staging .
 
       - name: Release
         uses: softprops/action-gh-release@v2
