@@ -101,48 +101,48 @@ pub async fn webproxy( //随机id
                 "ssh" => {
                     log::info!("ssh start {}", aid);
                     let rssh = core::RsshSession::new(app1.clone());
-                    let mut ssh = rssh.ssh(&aid).await.unwrap();
-
-                    loop {
-                        tokio::select! {
-                            Some(msg) = ssh.wait() => {
-                                log::debug!("channel msg {:?}",msg);
-                                match msg {
-                                    russh::ChannelMsg::Data { ref data } => {
-                                        let _ = sink.send(Message::Text(String::from_utf8_lossy(&data.to_vec()).to_string())).await;
-                                    }
-                                    russh::ChannelMsg::ExitStatus{ exit_status } => {
-                                        let _ = ssh.close().await;
-                                        break;
-                                    }
-                                    russh::ChannelMsg::Close{ .. } => {
-                                        break;
-                                    }
-                                    _ => {}
-                                }
-                            },
-                            Some(Ok(message)) = stream.next() => {
-                                match message{
-                                    Message::Binary(data) => {
-                                        let mut cursor = std::io::Cursor::new(data);
-                                        if let Ok(event) = protos::nps::WsMsg::decode(&mut cursor){
-                                            log::debug!("ws_msg msg {:?}",event);
-                                            match event.enumof {
-                                                Some(protos::nps::ws_msg::Enumof::Resize(e)) => {
-                                                    let _ = ssh.window_change(e.cols as u32, e.rows as u32, 0, 0).await;
-                                                },
-                                                Some(protos::nps::ws_msg::Enumof::Data(e)) => {
-                                                    let _ = ssh.data(e.data.as_ref()).await;
-                                                },
-                                                _ => {}
-                                            }
+                    if let Ok(mut ssh) = rssh.ssh(&aid).await{
+                        loop {
+                            tokio::select! {
+                                Some(msg) = ssh.wait() => {
+                                    log::debug!("channel msg {:?}",msg);
+                                    match msg {
+                                        russh::ChannelMsg::Data { ref data } => {
+                                            let _ = sink.send(Message::Text(String::from_utf8_lossy(&data.to_vec()).to_string())).await;
                                         }
-                                    },
-                                    Message::Close(_) => {
-                                        let _ = ssh.close().await;
-                                        break;
+                                        russh::ChannelMsg::ExitStatus{ exit_status } => {
+                                            let _ = ssh.close().await;
+                                            break;
+                                        }
+                                        russh::ChannelMsg::Close{ .. } => {
+                                            break;
+                                        }
+                                        _ => {}
                                     }
-                                    _ => {}
+                                },
+                                Some(Ok(message)) = stream.next() => {
+                                    match message{
+                                        Message::Binary(data) => {
+                                            let mut cursor = std::io::Cursor::new(data);
+                                            if let Ok(event) = protos::nps::WsMsg::decode(&mut cursor){
+                                                log::debug!("ws_msg msg {:?}",event);
+                                                match event.enumof {
+                                                    Some(protos::nps::ws_msg::Enumof::Resize(e)) => {
+                                                        let _ = ssh.window_change(e.cols as u32, e.rows as u32, 0, 0).await;
+                                                    },
+                                                    Some(protos::nps::ws_msg::Enumof::Data(e)) => {
+                                                        let _ = ssh.data(e.data.as_ref()).await;
+                                                    },
+                                                    _ => {}
+                                                }
+                                            }
+                                        },
+                                        Message::Close(_) => {
+                                            let _ = ssh.close().await;
+                                            break;
+                                        }
+                                        _ => {}
+                                    }
                                 }
                             }
                         }
@@ -152,34 +152,35 @@ pub async fn webproxy( //随机id
                 "vnc"|"gdi" => {
                     log::info!("vnc start {}", aid);
                     let rssh = core::RsshSession::new(app1.clone());
-                    let mut vnc = rssh.vnc(&aid).await.unwrap();
-                    loop {
-                        tokio::select! {
-                            Some(message) = vnc.wait() => {
-                                match message {
-                                    russh::ChannelMsg::Data{ ref data } => {//c->a
-                                        let _ = sink.send(Message::Binary(data.to_vec())).await;
-                                    },
-                                    russh::ChannelMsg::ExitStatus{ exit_status } => {
-                                        let _ = vnc.close().await;
-                                        break;
+                    if let Ok(mut vnc) = rssh.vnc(&aid).await{
+                        loop {
+                            tokio::select! {
+                                Some(message) = vnc.wait() => {
+                                    match message {
+                                        russh::ChannelMsg::Data{ ref data } => {//c->a
+                                            let _ = sink.send(Message::Binary(data.to_vec())).await;
+                                        },
+                                        russh::ChannelMsg::ExitStatus{ exit_status } => {
+                                            let _ = vnc.close().await;
+                                            break;
+                                        }
+                                        russh::ChannelMsg::Close{ .. } => {
+                                            break;
+                                        }
+                                        _ => {}
                                     }
-                                    russh::ChannelMsg::Close{ .. } => {
-                                        break;
+                                },
+                                Some(Ok(message)) = stream.next() => {
+                                    match message{
+                                        Message::Binary(data) => {
+                                            let _ = vnc.data(data.as_ref()).await;
+                                        },
+                                        Message::Close(_) => {
+                                            let _ = vnc.close().await;
+                                            break;
+                                        },
+                                        _ => {}
                                     }
-                                    _ => {}
-                                }
-                            },
-                            Some(Ok(message)) = stream.next() => {
-                                match message{
-                                    Message::Binary(data) => {
-                                        let _ = vnc.data(data.as_ref()).await;
-                                    },
-                                    Message::Close(_) => {
-                                        let _ = vnc.close().await;
-                                        break;
-                                    },
-                                    _ => {}
                                 }
                             }
                         }
@@ -189,34 +190,35 @@ pub async fn webproxy( //随机id
                 "rdp" => {
                     log::info!("rdp start {}", aid);
                     let rssh = core::RsshSession::new(app1.clone());
-                    let mut rdp = rssh.rdp(&aid).await.unwrap();
-                    loop {
-                        tokio::select! {
-                            Some(message) = rdp.wait() => {
-                                match message {
-                                    russh::ChannelMsg::Data{ ref data } => {//c->a
-                                        let _ = sink.send(Message::Binary(data.to_vec())).await;
-                                    },
-                                    russh::ChannelMsg::ExitStatus{ exit_status } => {
-                                        let _ = rdp.close().await;
-                                        break;
+                    if let Ok(mut rdp) = rssh.rdp(&aid).await{
+                        loop {
+                            tokio::select! {
+                                Some(message) = rdp.wait() => {
+                                    match message {
+                                        russh::ChannelMsg::Data{ ref data } => {//c->a
+                                            let _ = sink.send(Message::Binary(data.to_vec())).await;
+                                        },
+                                        russh::ChannelMsg::ExitStatus{ exit_status } => {
+                                            let _ = rdp.close().await;
+                                            break;
+                                        }
+                                        russh::ChannelMsg::Close{ .. } => {
+                                            break;
+                                        }
+                                        _ => {}
                                     }
-                                    russh::ChannelMsg::Close{ .. } => {
-                                        break;
+                                },
+                                Some(Ok(message)) = stream.next() => {
+                                    match message{
+                                        Message::Binary(data) => {
+                                            let _ = rdp.data(data.as_ref()).await;
+                                        },
+                                        Message::Close(_) => {
+                                            let _ = rdp.close().await;
+                                            break;
+                                        },
+                                        _ => {}
                                     }
-                                    _ => {}
-                                }
-                            },
-                            Some(Ok(message)) = stream.next() => {
-                                match message{
-                                    Message::Binary(data) => {
-                                        let _ = rdp.data(data.as_ref()).await;
-                                    },
-                                    Message::Close(_) => {
-                                        let _ = rdp.close().await;
-                                        break;
-                                    },
-                                    _ => {}
                                 }
                             }
                         }

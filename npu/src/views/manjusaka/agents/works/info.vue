@@ -92,8 +92,8 @@
       </div>
     </div>
   </PageWrapper>
-  <ProxyModal @register="registerModal" />
-  <PlugModal @register="registerModal" @success="PlugSend"/>
+  <ProxyModal @register="registerModalproxy" />
+  <PlugModal @register="registerModalplug" @success="PlugSend"/>
 </template>
 
 <script lang="ts">
@@ -165,7 +165,8 @@ export default defineComponent({
       crtlist: [],
     });
     const go = useGo();
-    const [registerModal, { openModal,closeModal }] = useModal();
+    const [registerModalplug, { openModal: openModalplug,closeModal: closeModalplug }] = useModal();
+    const [registerModalproxy, { openModal: openModalproxy,closeModal: closeModalproxy }] = useModal();
     const { createMessage } = useMessage();
     const [agentinfo] = useDescription({
       column: 2,
@@ -344,7 +345,7 @@ export default defineComponent({
     }
 
     function CreateProxy() {
-      openModal(true, {
+      openModalproxy(true, {
         record: {
           id: state.agent.id, // 将ID传递给表单
         },
@@ -352,7 +353,7 @@ export default defineComponent({
     }
 
     function RunPlugin() {
-      openModal(true, {
+      openModalplug(true, {
         record: {
           id: state.agent.id, // 将ID传递给表单
         },
@@ -361,7 +362,7 @@ export default defineComponent({
 
     function PlugSend(event) {
       emit("onsend", event);
-      closeModal();
+      closeModalplug();
     }
 
     const beforeUpload = (file: File) => {
@@ -607,7 +608,8 @@ export default defineComponent({
       beforeUpload,
       NpcExit,
       Npc2Load,
-      registerModal,
+      registerModalproxy,
+      registerModalplug,
       CreateProxy,
       RunPlugin,
       PlugSend,

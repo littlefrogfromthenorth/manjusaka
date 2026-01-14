@@ -32,12 +32,12 @@ async fn npc_handler(
     body: Option<Vec<u8>>,
     app: Data<&core::AppState>,
     addr: &RemoteAddr,
-) -> impl IntoResponse {
+) -> anyhow::Result<impl IntoResponse> {
 
     if let Some(proj) = app.get_project_by_route(&route).await {
         // /manjusaka/js/js.KvWzsV.js /manjusaka/KvWzsV.jpg  /manjusaka/9111
 
-        let crypt = AesCrypt::new(&proj.enckey).unwrap(); // 直接退出
+        let crypt = AesCrypt::new(&proj.enckey)?; // 直接退出
 
         let strmod = uri.parse::<u16>().unwrap_or(
             utils::getstrmod(
@@ -178,12 +178,12 @@ async fn npc_handler(
             }
         };
 
-        res_data.into_response()
+        Ok(res_data.into_response())
 
     }else{
-        Response::builder()
+        Ok(Response::builder()
             .status(StatusCode::NOT_FOUND)
-            .body("404 not found")
+            .body("404 not found"))
     }
 }
 
