@@ -81,10 +81,10 @@ jobs:
         with:
           tag_name: Release-latest
           files: |
-            release.${{ matrix.target }}.tar
+            release.${{ matrix.target }}.tar.gz
 
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            release.${{ matrix.target }}.tar
+            release.${{ matrix.target }}.tar.gz
