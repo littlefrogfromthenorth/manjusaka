@@ -41,3 +41,4 @@ fn dir_init() {
     let _ = std::fs::create_dir_all("./payloads");
     let _ = std::fs::create_dir_all("./plugins");
 }
+

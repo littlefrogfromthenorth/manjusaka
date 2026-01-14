@@ -10,19 +10,26 @@ use std::convert::TryInto;
 #[oai(rename = "PassResultModel")] 
 pub struct Model {
 	#[sea_orm(primary_key, auto_increment = false)]
+	#[serde(default)]
 	pub id 		 : String,
-	#[sea_orm(default_value = "")]   
+	#[sea_orm(default_value = "")] 
+	#[serde(default)]  
 	pub target 	 : String,
-	#[sea_orm(default_value = "")]   
+	#[sea_orm(default_value = "")]
+	#[serde(default)]   
 	pub agent  	 : String,
 	#[sea_orm(default_value = "")] 
+	#[serde(default)]
 	pub username : String, 
-	  
+	#[serde(default)]
 	pub password : String,
-	#[sea_orm(default_value = "")]   
+	#[sea_orm(default_value = "")] 
+	#[serde(default)]  
 	pub passtype : String, 
-	#[sea_orm(default_value = "")]  
-	pub passfrom : String,  
+	#[sea_orm(default_value = "")] 
+	#[serde(default)] 
+	pub passfrom : String,
+	#[serde(default)]    
 	pub updateat : i64, 
 }
 

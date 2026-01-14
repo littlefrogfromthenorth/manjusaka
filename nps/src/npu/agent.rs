@@ -174,7 +174,7 @@ impl AgentApi {
         }
         Ok(Json(response))
     }
-
+ 
     #[oai(path = "/pluglist", method = "post")]
     pub async fn pluglist(
         &self,
@@ -192,6 +192,7 @@ impl AgentApi {
                                 "name":     name.to_string(),
                                 "entry":    "".to_string(),
                                 "args":     "".to_string(),
+                                "arch":     "".to_string(),
                             }));
                         }
                     }

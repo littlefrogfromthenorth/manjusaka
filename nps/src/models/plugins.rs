@@ -8,11 +8,11 @@ pub struct Model {
 	#[sea_orm(primary_key, auto_increment = false)]
     pub id: String,
     #[sea_orm(unique)]  	 
-	pub plugname : String,   
-	pub plugtype : String,  
+	pub plugname : String,  
 	pub plugargs : String,   
-	pub plugos   : String,   
-	pub plugarch : String,
+	pub plugentry : String,   
+	pub plugarch : String,  
+	pub plugtype : String, 
 	pub updateat : i64,   
 }
 

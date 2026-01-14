@@ -102,18 +102,20 @@ pub struct Action {
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct Plugin {
+    #[prost(bytes = "vec", tag = "1")]
+    pub data: ::prost::alloc::vec::Vec<u8>,
     /// ld-加载插件/请求插件、  ss-加载成功   ex-执行插件 dd-插件回显
-    #[prost(string, tag = "1")]
-    pub act: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
-    pub name: ::prost::alloc::string::String,
+    pub act: ::prost::alloc::string::String,
     /// exe-  dll-
     #[prost(string, tag = "3")]
     pub arch: ::prost::alloc::string::String,
     #[prost(string, tag = "4")]
+    pub name: ::prost::alloc::string::String,
+    #[prost(string, tag = "5")]
     pub args: ::prost::alloc::string::String,
-    #[prost(bytes = "vec", tag = "5")]
-    pub data: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag = "6")]
+    pub entry: ::prost::alloc::string::String,
 }
 /// npc 列表更新
 #[derive(serde::Serialize, serde::Deserialize)]
