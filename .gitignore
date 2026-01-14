@@ -53,7 +53,6 @@ logs/
 **/*.pb.cc
 
 # Binary files
-*.exe
 *.dll
 *.so
 *.dylib
