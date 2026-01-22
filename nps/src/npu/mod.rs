@@ -172,10 +172,10 @@ pub async fn start(addr: &str, app: core::AppState) -> Result<(), Box<dyn std::e
                 MemoryStorage::new()))
         .data(app);
 
-    let crt_bytes = std::fs::read("certs/server.crt")?;
-    let key_bytes = std::fs::read("certs/server.key")?;
-    let config = RustlsConfig::new().fallback(RustlsCertificate::new().cert(crt_bytes).key(key_bytes));
-    let listener = TcpListener::bind(addr).rustls(config);
+    //let crt_bytes = std::fs::read("certs/server.crt")?;
+    //let key_bytes = std::fs::read("certs/server.key")?;
+    //let config = RustlsConfig::new().fallback(RustlsCertificate::new().cert(crt_bytes).key(key_bytes));
+    let listener = TcpListener::bind(addr);
 
     Ok(poem::Server::new(listener).run(npsapp).await?)
 }

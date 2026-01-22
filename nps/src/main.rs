@@ -26,10 +26,10 @@ async fn main() {
 
     npc::npc2::start(state.clone()).await.unwrap();
 
-    let npcaddr = models::settings::get(&state.conn,"npc.listen","0.0.0.0:31000").await;
+    let npcaddr = models::settings::get(&state.conn,"npc.listen","0.0.0.0:8085").await;
     npc::npc1::start(&npcaddr,state.clone()).await;
 
-    let npsaddr = models::settings::get(&state.conn,"nps.listen","0.0.0.0:33000").await;
+    let npsaddr = models::settings::get(&state.conn,"nps.listen","0.0.0.0:8086").await;
     npu::start(&npsaddr,state).await.unwrap();
     
 }
